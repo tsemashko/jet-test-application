@@ -16,9 +16,11 @@ export default class MyApp extends JetApp {
 	}
 }
 
-app.attachEvent("app:error:resolve", function(err, url) {
-	alert("Can't find a module");
-});
+
 if (!BUILD_AS_MODULE) {
 	webix.ready(() => new MyApp().render());
 }
+
+app.attachEvent("app:error:resolve", function(err, url) {
+	alert("Can't find a module");
+});
