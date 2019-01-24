@@ -2,9 +2,9 @@ import { JetView } from "webix-jet";
 import { contacts } from "models/contacts";
 import { activities } from "models/activities";
 import { activitytypes } from "models/activitytypes";
-import FormView from "./form";
+import ActivityFormView from "./activityForm";
 
-export default class ContactDetailedView extends JetView {
+export default class ActivityView extends JetView {
 	config() {
 		const toolbar = {
 			view: "toolbar",
@@ -16,12 +16,12 @@ export default class ContactDetailedView extends JetView {
 				},
 				{
 					view: "button",
-					id: "addbtn",
 					label: "Add activity",
 					type: "icon",
 					icon: "wxi-plus-square",
 					width: 200,
 					click: () => {
+						this.window.setHeaderAndButtonName(null);
 						this.window.getRoot().show();
 					}
 				}
@@ -29,7 +29,7 @@ export default class ContactDetailedView extends JetView {
 		};
 		const table = {
 			view: "datatable",
-			id: "table",
+			localId: "table",
 			columns: [
 				{
 					id: "State",
@@ -47,7 +47,7 @@ export default class ContactDetailedView extends JetView {
 					collection: activitytypes
 				},
 				{
-					id: "FormatDate",
+					id: "DueDate",
 					header: ["Due date", { content: "dateRangeFilter" }],
 					sort: "date",
 					format: webix.Date.dateToStr("%d-%m-%Y %H:%i"),
@@ -82,13 +82,15 @@ export default class ContactDetailedView extends JetView {
 			onClick: {
 				removeActivity: (e, id) => {
 					activities.remove(id);
+					return false;
 				},
 				editActivity: (e, id) => {
-					this.window.getRoot().show();
 					const item = this.$$("table").getItem(id);
-					item.Date = item.FormatDate;
-					item.Time = item.FormatDate;
-					this.window.$$("form").setValues(item);
+					item.Date = item.DueDate;
+					item.Time = item.DueDate;
+					this.window.$$("activityForm").setValues(item);
+					this.window.setHeaderAndButtonName(item);
+					this.window.getRoot().show();
 				}
 			}
 		};
@@ -96,6 +98,6 @@ export default class ContactDetailedView extends JetView {
 	}
 	init() {
 		this.$$("table").sync(activities);
-		this.window = this.ui(FormView);
+		this.window = this.ui(ActivityFormView);
 	}
 }

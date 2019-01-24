@@ -32,27 +32,34 @@ export default class ContactsView extends JetView {
 				}
 			}
 		};
+		var addButton = {
+			view: "button",
+			label: "Add contact",
+			type: "icon",
+			icon: "wxi-plus",
+			width: 300,
+			click: () => {
+				this.show("addOrEditContactForm");
+			}
+		};
 		var ui = {
 			cols: [
-				{ rows: [header, { rows: [list] }], width: 300 },
-				{ rows: [{ $subview: ContactDetailed }] }
+				{ rows: [header, list, addButton], width: 300 },
+				{ $subview: true }
 			]
 		};
 		return ui;
 	}
 	init() {
 		this.$$("list").sync(contacts);
-		contacts.waitData.then(() => {
-			const id = this.getParam("id") || contacts.getFirstId();
-			if (id) {
-				this.$$("list").select(id);
-			}
-		});
 	}
 	urlChange() {
 		contacts.waitData.then(() => {
 			const id = this.getParam("id") || contacts.getFirstId();
-			this.$$("list").select(id);
+			if (id) {
+				this.show("contactDetailed");
+				this.$$("list").select(id);
+			}
 		});
 	}
 }

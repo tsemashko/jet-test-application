@@ -61,43 +61,6 @@
     float: right;
 }
 
-#user-icon {
-    float: left;
-    width: 45px;
-    padding-right: 10px;
-}
-#user-icon-detailed {
-    width: 150px;
-    margin-left: 20px;
-    margin-top: 20px;
-}
-
-#user-image{
-    padding-top: 5px;
-}
-
-.user-name-detailed {
-    font-size: xx-large;
-}
-.user-status-detailed {
-    font-size: x-large;
-}
-.center{
-    text-align: center;
-}
-
-.btn{
-    border-radius: 30px;
-}
-.btn:hover{
-    border-radius: 5px;
-    background:ghostwhite;
-}
-
-.btn-padding{
-    padding-top:20px;
-}
-
 .removeActivity:hover, .editActivity:hover{
     color:#5ccce7;
 }
@@ -108,4 +71,56 @@
 
 .webix_list_item{
     border-bottom:none;
+}
+
+
+#user-icon-detailed {
+  width: 150px;
+  margin-left: 20px;
+  margin-top: 20px;
+  padding-right:40px;
+  float:left;
+}
+
+#user-icon {
+  float: left;
+  width: 45px;
+  padding-right: 10px;
+}
+
+#user-image{
+  padding-top: 5px;
+}
+
+.user-name-detailed, .form-header {
+  font-size: xx-large;
+}
+
+.user-status-detailed {
+  font-size: x-large;
+  text-align:center;
+}
+
+.contact-name{
+  float:left;
+}
+
+.contact-detailed-info{
+  padding-top:40px;
+  float:right;
+}
+.info-column{
+  display: inline-block;
+  padding-right:30px;
+  width:150px;
+  vertical-align:top;
+}
+.item{
+  padding-bottom:40px;
+}
+
+.webix_toolbar {
+  border-top:none;
+  border-bottom:none;
+  margin-left: 2px;
 }

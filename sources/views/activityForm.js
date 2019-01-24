@@ -3,19 +3,25 @@ import { contacts } from "models/contacts";
 import { activitytypes } from "models/activitytypes";
 import { activities } from "models/activities";
 
-export default class FormView extends JetView {
+export default class ActivityFormView extends JetView {
 	config() {
-		var addOrEditForm = {
+		const addOrEditForm = {
 			view: "window",
-			id: "window",
+			localId: "window",
 			position: "center",
 			width: 500,
 			height: 500,
 			modal: true,
-			head: "Add/Edit activity",
+			head: {
+				view: "label",
+				localId: "head",
+				label: "",
+				align: "center",
+				css: { "font-size": "large" }
+			},
 			body: {
 				view: "form",
-				id: "form",
+				localId: "activityForm",
 				rules: {
 					Details: webix.rules.isNotEmpty,
 					TypeID: webix.rules.isNotEmpty,
@@ -40,7 +46,7 @@ export default class FormView extends JetView {
 					},
 					{
 						view: "combo",
-						id: "contact",
+						localId: "contact",
 						label: "Contact",
 						name: "ContactID",
 						options: [],
@@ -53,7 +59,8 @@ export default class FormView extends JetView {
 								name: "Date",
 								label: "Date",
 								width: 250,
-								required: true
+								required: true,
+								format: "%d-%m-%Y"
 							},
 							{
 								view: "datepicker",
@@ -62,7 +69,8 @@ export default class FormView extends JetView {
 								type: "time",
 								fillspace: 1,
 								labelAlign: "right",
-								required: true
+								required: true,
+								format: "%H:%i"
 							}
 						]
 					},
@@ -75,29 +83,28 @@ export default class FormView extends JetView {
 						cols: [
 							{
 								view: "button",
-								label: "Add/Save",
+								localId: "savebutton",
+								label: "",
 								type: "form",
 								click: () => {
-									/*similar pieces of code (like in scheme in activities datacollection)
-                      Here it necessary for correct displaying date before refreshing the page,
-                      in scheme for correct parcing date on server*/
-									const values = this.$$("form").getValues();
+									/*Здесь сложно обойтись одним-двумя полями для дат, т.к. у формы уже
+                  как минимум два поля (для даты и для времени), а еще DueDate, которая
+                  хранит дату в формате строки.
+                  Получилось только из 4-х полей сделать 3.
+                  */
+									const values = this.$$("activityForm").getValues();
 									const formatDate = webix.Date.dateToStr("%d-%m-%Y");
 									const formatTime = webix.Date.dateToStr("%H:%i");
-									const Date_ = formatDate(
-										webix.i18n.longDateFormatDate(values.Date)
-									);
-									const Time_ = formatTime(
-										webix.i18n.longDateFormatDate(values.Time)
-									);
-									values.DueDate = `${Date_} ${Time_}`;
-									if (this.$$("form").validate()) {
+									values.DueDate = `${formatDate(values.Date)} ${formatTime(
+										values.Time
+									)}`;
+									if (this.$$("activityForm").validate()) {
 										if (!activities.getItem(values.id)) {
 											activities.add(values);
 										} else {
 											activities.updateItem(values.id, values);
 										}
-										this.$$("form").clear();
+										this.$$("activityForm").clear();
 										this.getRoot().hide();
 									}
 								}
@@ -106,7 +113,7 @@ export default class FormView extends JetView {
 								view: "button",
 								label: "Cancel",
 								click: () => {
-									this.$$("form").clear();
+									this.$$("activityForm").clear();
 									this.getRoot().hide();
 								}
 							}
@@ -119,15 +126,18 @@ export default class FormView extends JetView {
 	}
 	init() {
 		contacts.waitData.then(() => {
-			let contactNames = [];
-			contacts.data.each((item, i) => {
-				let newItem = {
-					id: item.id,
-					value: item.value
-				};
-				contactNames[i] = newItem;
-			});
-			this.$$("contact").define("options", contactNames);
+			this.$$("contact").define("options", contacts.data);
 		});
+	}
+	setHeaderAndButtonName(value) {
+		if (value) {
+			this.$$("head").define("label", "Edit Activity");
+			this.$$("savebutton").define("label", "Save");
+		} else {
+			this.$$("head").define("label", "Add Activity");
+			this.$$("savebutton").define("label", "Add");
+		}
+		this.$$("head").refresh();
+		this.$$("savebutton").refresh();
 	}
 }
