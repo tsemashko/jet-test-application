@@ -81,8 +81,19 @@ export default class ActivityView extends JetView {
 			],
 			onClick: {
 				removeActivity: (e, id) => {
-					activities.remove(id);
-					return false;
+					webix.confirm({
+						title: "Deleting activity",
+						ok: "Yes",
+						cancel: "No",
+						text:
+							"Are you sure you want to delete this activity? Deleting cannot be undone.",
+						callback: result => {
+							if (result) {
+								activities.remove(id);
+								return false;
+							}
+						}
+					});
 				},
 				editActivity: (e, id) => {
 					const item = this.$$("table").getItem(id);

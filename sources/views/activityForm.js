@@ -77,7 +77,9 @@ export default class ActivityFormView extends JetView {
 					{
 						view: "checkbox",
 						label: "Completed",
-						name: "mark"
+						name: "State",
+						checkValue: "Completed",
+						uncheckValue: "Open"
 					},
 					{
 						cols: [
@@ -101,8 +103,10 @@ export default class ActivityFormView extends JetView {
 									if (this.$$("activityForm").validate()) {
 										if (!activities.getItem(values.id)) {
 											activities.add(values);
+											this.app.callEvent("onClickSave_activityForm", [values]);
 										} else {
 											activities.updateItem(values.id, values);
+											this.app.callEvent("onClickSave_activityForm");
 										}
 										this.$$("activityForm").clear();
 										this.getRoot().hide();
