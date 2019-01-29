@@ -3,6 +3,7 @@ import { contacts } from "models/contacts";
 import { statuses } from "models/statuses";
 import { activitytypes } from "models/activitytypes";
 import { activities } from "models/activities";
+import { files } from "models/files";
 import ActivityFormView from "./activityForm";
 
 export default class ContactDetailedView extends JetView {
@@ -70,6 +71,11 @@ export default class ContactDetailedView extends JetView {
 								if (result) {
 									const id = this.getParentView().getParam("id", true);
 									contacts.remove(id);
+									let deletedActivities = activities.find(function(obj) {
+										return obj.ContactID == id;
+									});
+									deletedActivities = deletedActivities.map(obj => obj.id);
+									activities.remove(deletedActivities);
 									this.app.callEvent("onAfterDelete_contactDetailed");
 									return false;
 								}
@@ -111,7 +117,7 @@ export default class ContactDetailedView extends JetView {
 							rows: [
 								{
 									view: "datatable",
-									localId: "table",
+									localId: "activitiesTable",
 									scrollX: false,
 									select: true,
 									columns: [
@@ -168,15 +174,20 @@ export default class ContactDetailedView extends JetView {
 													"Are you sure you want to delete this activity? Deleting cannot be undone.",
 												callback: result => {
 													if (result) {
-														activities.remove(id);
-														this.$$("table").remove(id);
+														if (activities.exists(id)) {
+															activities.remove(id);
+															this.$$("activitiesTable").remove(id);
+														} else {
+															activities.remove(activities.getLastId());
+															this.$$("activitiesTable").remove(id);
+														}
 														return false;
 													}
 												}
 											});
 										},
 										editActivity: (e, id) => {
-											const item = this.$$("table").getItem(id);
+											const item = this.$$("activitiesTable").getItem(id);
 											item.Date = item.DueDate;
 											item.Time = item.DueDate;
 											this.window.$$("activityForm").setValues(item);
@@ -203,9 +214,77 @@ export default class ContactDetailedView extends JetView {
 							]
 						},
 						{
-							view: "template",
-							template: "Files",
-							id: "files"
+							id: "files",
+							rows: [
+								{
+									view: "datatable",
+									localId: "filesTable",
+									scrollX: false,
+									columns: [
+										{
+											id: "name",
+											header: "Name",
+											fillspace: 1,
+											sort: "string"
+										},
+										{
+											id: "lastModifiedDate",
+											header: "Change date",
+											format: webix.Date.dateToStr("%d-%m-%Y"),
+											width: 200,
+											sort: "date"
+										},
+										{
+											id: "sizetext",
+											header: "Size",
+											width: 100,
+											sort: "string"
+										},
+										{
+											id: "delete",
+											header: "",
+											width: 40,
+											template:
+												"<i class='webix_icon wxi-trash removeFile'></i>"
+										}
+									],
+									onClick: {
+										removeFile: (e, id) => {
+											webix.confirm({
+												title: "Deleting file",
+												ok: "Yes",
+												cancel: "No",
+												text:
+													"Are you sure you want to delete this file? Deleting cannot be undone.",
+												callback: result => {
+													if (result) {
+														files.remove(id);
+														this.filterFiles(this.getParam("id", true));
+														return false;
+													}
+												}
+											});
+										}
+									}
+								},
+								{
+									view: "uploader",
+									value: "Upload file",
+									autosend: false,
+									on: {
+										onBeforeFileAdd: file => {
+											files.add({
+												ContactID: this.getParam("id", true),
+												id: file.id,
+												name: file.name,
+												lastModifiedDate: file.file.lastModifiedDate,
+												sizetext: file.sizetext
+											});
+											this.filterFiles(this.getParam("id", true));
+										}
+									}
+								}
+							]
 						}
 					]
 				}
@@ -222,6 +301,7 @@ export default class ContactDetailedView extends JetView {
 				const id = this.getParam("id", true);
 				if (id) {
 					this.filterActivities(id);
+					this.filterFiles(id);
 					let user = contacts.getItem(id);
 					const status = statuses.getItem(user.StatusID);
 					if (status) {
@@ -237,20 +317,30 @@ export default class ContactDetailedView extends JetView {
 			.all([contacts.waitData, statuses.waitData, activities.waitData])
 			.then(() => {
 				const id = this.getParam("id", true);
-				if (id) this.filterActivities(id);
+				if (id) {
+					this.filterActivities(id);
+				}
 			});
 		this.window = this.ui(ActivityFormView);
 		this.on(this.app, "onClickSave_activityForm", values => {
 			if (values) {
-				this.$$("table").parse(values);
+				this.$$("activitiesTable").parse(values);
 			}
-			this.$$("table").refresh();
+			this.$$("activitiesTable").refresh();
 		});
 	}
 	filterActivities(id) {
-		this.$$("table").clearAll();
-		this.$$("table").parse(
+		this.$$("activitiesTable").clearAll();
+		this.$$("activitiesTable").parse(
 			activities.find(function(obj) {
+				return obj.ContactID == id;
+			})
+		);
+	}
+	filterFiles(id) {
+		this.$$("filesTable").clearAll();
+		this.$$("filesTable").parse(
+			files.find(function(obj) {
 				return obj.ContactID == id;
 			})
 		);

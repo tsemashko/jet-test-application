@@ -36,7 +36,6 @@ export default class ContactFormView extends JetView {
 									view: "datepicker",
 									name: "StartDate",
 									label: "Joining date",
-									//width: 250,
 									required: true,
 									format: "%d-%m-%Y"
 								},
@@ -99,7 +98,6 @@ export default class ContactFormView extends JetView {
 									view: "datepicker",
 									name: "Birthday",
 									label: "Birthday",
-									//width: 250,
 									required: true,
 									format: "%d-%m-%Y"
 								},
