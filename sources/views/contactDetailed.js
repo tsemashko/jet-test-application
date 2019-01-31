@@ -1,10 +1,9 @@
 import { JetView } from "webix-jet";
 import { contacts } from "models/contacts";
 import { statuses } from "models/statuses";
-import { activitytypes } from "models/activitytypes";
 import { activities } from "models/activities";
-import { files } from "models/files";
-import ActivityFormView from "./activityForm";
+import ActivitiesTabbarView from "./activitiesTabbar";
+import FilesTabbarView from "./filesTabbar";
 
 export default class ContactDetailedView extends JetView {
 	config() {
@@ -102,7 +101,7 @@ export default class ContactDetailedView extends JetView {
 			rows: [
 				{
 					view: "tabbar",
-					id: "contactTabbar",
+					localId: "contactTabbar",
 					value: "",
 					multiview: true,
 					options: [
@@ -114,177 +113,11 @@ export default class ContactDetailedView extends JetView {
 					cells: [
 						{
 							id: "activities",
-							rows: [
-								{
-									view: "datatable",
-									localId: "activitiesTable",
-									scrollX: false,
-									select: true,
-									columns: [
-										{
-											id: "State",
-											header: "",
-											width: 40,
-											template: "{common.checkbox()}",
-											checkValue: "Completed",
-											uncheckValue: "Open"
-										},
-										{
-											id: "TypeID",
-											header: [{ content: "selectFilter" }],
-											sort: "string",
-											width: 150,
-											collection: activitytypes
-										},
-										{
-											id: "Details",
-											header: [{ content: "textFilter" }],
-											sort: "string",
-											fillspace: 1
-										},
-										{
-											id: "DueDate",
-											header: [{ content: "dateRangeFilter" }],
-											sort: "date",
-											format: webix.Date.dateToStr("%d-%m-%Y %H:%i"),
-											width: 200
-										},
-										{
-											id: "edit",
-											header: "",
-											width: 40,
-											template:
-												"<i class='webix_icon wxi-pencil editActivity'></i>"
-										},
-										{
-											id: "delete",
-											header: "",
-											width: 40,
-											template:
-												"<i class='webix_icon wxi-trash removeActivity'></i>"
-										}
-									],
-									onClick: {
-										removeActivity: (e, id) => {
-											webix.confirm({
-												title: "Deleting activity",
-												ok: "Yes",
-												cancel: "No",
-												text:
-													"Are you sure you want to delete this activity? Deleting cannot be undone.",
-												callback: result => {
-													if (result) {
-														if (activities.exists(id)) {
-															activities.remove(id);
-															this.$$("activitiesTable").remove(id);
-														} else {
-															activities.remove(activities.getLastId());
-															this.$$("activitiesTable").remove(id);
-														}
-														return false;
-													}
-												}
-											});
-										},
-										editActivity: (e, id) => {
-											const item = this.$$("activitiesTable").getItem(id);
-											item.Date = item.DueDate;
-											item.Time = item.DueDate;
-											this.window.$$("activityForm").setValues(item);
-											this.window.setHeaderAndButtonName(item);
-											this.window.$$("contact").disable();
-											this.window.getRoot().show();
-										}
-									}
-								},
-								{
-									view: "button",
-									label: "Add activity",
-									type: "icon",
-									icon: "wxi-plus-square",
-									click: () => {
-										this.window.setHeaderAndButtonName(null);
-										this.window.getRoot().show();
-										this.window
-											.$$("contact")
-											.setValue(this.getParentView().getParam("id", true));
-										this.window.$$("contact").disable();
-									}
-								}
-							]
+							$subview: ActivitiesTabbarView
 						},
 						{
 							id: "files",
-							rows: [
-								{
-									view: "datatable",
-									localId: "filesTable",
-									scrollX: false,
-									columns: [
-										{
-											id: "name",
-											header: "Name",
-											fillspace: 1,
-											sort: "string"
-										},
-										{
-											id: "lastModifiedDate",
-											header: "Change date",
-											format: webix.Date.dateToStr("%d-%m-%Y"),
-											width: 200,
-											sort: "date"
-										},
-										{
-											id: "sizetext",
-											header: "Size",
-											width: 100,
-											sort: "string"
-										},
-										{
-											id: "delete",
-											header: "",
-											width: 40,
-											template:
-												"<i class='webix_icon wxi-trash removeFile'></i>"
-										}
-									],
-									onClick: {
-										removeFile: (e, id) => {
-											webix.confirm({
-												title: "Deleting file",
-												ok: "Yes",
-												cancel: "No",
-												text:
-													"Are you sure you want to delete this file? Deleting cannot be undone.",
-												callback: result => {
-													if (result) {
-														files.remove(id);
-														this.filterFiles(this.getParam("id", true));
-														return false;
-													}
-												}
-											});
-										}
-									}
-								},
-								{
-									view: "uploader",
-									value: "Upload file",
-									autosend: false,
-									on: {
-										onBeforeFileAdd: file => {
-											files.add({
-												ContactID: this.getParam("id", true),
-												id: file.id,
-												name: file.name,
-												lastModifiedDate: file.file.lastModifiedDate,
-												sizetext: file.sizetext
-											});
-											this.filterFiles(this.getParam("id", true));
-										}
-									}
-								}
-							]
+							$subview: FilesTabbarView
 						}
 					]
 				}
@@ -300,8 +133,6 @@ export default class ContactDetailedView extends JetView {
 			.then(() => {
 				const id = this.getParam("id", true);
 				if (id) {
-					this.filterActivities(id);
-					this.filterFiles(id);
 					let user = contacts.getItem(id);
 					const status = statuses.getItem(user.StatusID);
 					if (status) {
@@ -311,38 +142,5 @@ export default class ContactDetailedView extends JetView {
 					this.$$("detailedView").setValues(user);
 				}
 			});
-	}
-	init() {
-		webix.promise
-			.all([contacts.waitData, statuses.waitData, activities.waitData])
-			.then(() => {
-				const id = this.getParam("id", true);
-				if (id) {
-					this.filterActivities(id);
-				}
-			});
-		this.window = this.ui(ActivityFormView);
-		this.on(this.app, "onClickSave_activityForm", values => {
-			if (values) {
-				this.$$("activitiesTable").parse(values);
-			}
-			this.$$("activitiesTable").refresh();
-		});
-	}
-	filterActivities(id) {
-		this.$$("activitiesTable").clearAll();
-		this.$$("activitiesTable").parse(
-			activities.find(function(obj) {
-				return obj.ContactID == id;
-			})
-		);
-	}
-	filterFiles(id) {
-		this.$$("filesTable").clearAll();
-		this.$$("filesTable").parse(
-			files.find(function(obj) {
-				return obj.ContactID == id;
-			})
-		);
 	}
 }

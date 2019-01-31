@@ -90,10 +90,10 @@ export default class ActivityView extends JetView {
 						callback: result => {
 							if (result) {
 								activities.remove(id);
-								return false;
 							}
 						}
 					});
+					return false;
 				},
 				editActivity: (e, id) => {
 					const item = this.$$("table").getItem(id);

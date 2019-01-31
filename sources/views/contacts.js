@@ -1,20 +1,19 @@
 import { JetView } from "webix-jet";
 import { contacts } from "../models/contacts";
-import ContactFormView from "./contactForm";
 
 export default class ContactsView extends JetView {
 	config() {
-		var header = {
+		const header = {
 			view: "toolbar",
 			css: "webix_dark",
-			cols: [
+			rows: [
 				{
 					view: "label",
 					label: "Contacts"
 				}
 			]
 		};
-		var list = {
+		const list = {
 			view: "list",
 			localId: "list",
 			template: function(obj) {
@@ -37,7 +36,7 @@ export default class ContactsView extends JetView {
 				}
 			}
 		};
-		var addButton = {
+		const addButton = {
 			view: "button",
 			label: "Add contact",
 			type: "icon",
@@ -46,10 +45,9 @@ export default class ContactsView extends JetView {
 			click: () => {
 				this.$$("list").unselectAll();
 				this.app.callEvent("onCallContactForm", ["add"]);
-				//this.contactForm.setHeaderAndButtonName(null);
 			}
 		};
-		var ui = {
+		const ui = {
 			cols: [
 				{ rows: [header, list, addButton], width: 300 },
 				{ $subview: true }
@@ -59,7 +57,12 @@ export default class ContactsView extends JetView {
 	}
 	init() {
 		this.$$("list").sync(contacts);
-		this.contactForm = this.ui(ContactFormView);
+		//const formatDate = webix.Date.dateToStr("%d-%m-%Y");
+
+		this.$$("list").data.attachEvent("onIdChange", (oldId, newId) => {
+			this.setParam("id", newId, true);
+			this.$$("list").select(newId);
+		});
 
 		this.on(this.app, "onCallContactForm", way => {
 			this.show(`contactForm?way=${way}`);
@@ -68,23 +71,14 @@ export default class ContactsView extends JetView {
 		this.on(this.app, "onAfterDelete_contactDetailed", () => {
 			this.$$("list").select(contacts.getFirstId());
 		});
-		this.on(this.app, "onClickCancel_contactForm", way => {
+		this.on(this.app, "onClickCancel_contactForm", () => {
 			this.$$("list").enable();
 			this.show("contactDetailed");
-			if (way == "edit") {
-				this.$$("list").select(this.getParam("id", true));
-			} else if (way == "add") {
-				this.setParam("id", contacts.getFirstId(), true);
-				this.$$("list").select(contacts.getFirstId());
-			}
+			this.$$("list").select(this.getParam("id", true));
 		});
-		this.on(this.app, "onClickSave_contactForm", id => {
+		this.on(this.app, "onClickSave_contactForm", () => {
 			this.$$("list").enable();
-			const _id = this.getParam("id", true);
-			this.$$("list").select(_id);
-			if (id == _id) {
-				this.show("contactDetailed");
-			}
+			this.show("contactDetailed");
 		});
 		contacts.waitData.then(() => {
 			const id = contacts.getFirstId();

@@ -22,13 +22,6 @@ export default class ActivityFormView extends JetView {
 			body: {
 				view: "form",
 				localId: "activityForm",
-				rules: {
-					Details: webix.rules.isNotEmpty,
-					TypeID: webix.rules.isNotEmpty,
-					ContactID: webix.rules.isNotEmpty,
-					Date: webix.rules.isNotEmpty,
-					Time: webix.rules.isNotEmpty
-				},
 				elements: [
 					{
 						view: "textarea",
@@ -89,11 +82,6 @@ export default class ActivityFormView extends JetView {
 								label: "",
 								type: "form",
 								click: () => {
-									/*Здесь сложно обойтись одним-двумя полями для дат, т.к. у формы уже
-                  как минимум два поля (для даты и для времени), а еще DueDate, которая
-                  хранит дату в формате строки.
-                  Получилось только из 4-х полей сделать 3.
-                  */
 									const values = this.$$("activityForm").getValues();
 									const formatDate = webix.Date.dateToStr("%d-%m-%Y");
 									const formatTime = webix.Date.dateToStr("%H:%i");

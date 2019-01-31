@@ -15,6 +15,9 @@ export default class ContactFormView extends JetView {
 		const addOrEditForm = {
 			view: "form",
 			localId: "contactForm",
+			rules: {
+				Email: webix.rules.isEmail
+			},
 			elements: [
 				{
 					cols: [
@@ -136,8 +139,7 @@ export default class ContactFormView extends JetView {
 													label: "Delete photo",
 													click: () => {
 														this.$$("image").setValues({
-															Photo:
-																"https://www.uic.mx/posgrados/files/2018/05/default-user.png"
+															Photo: ""
 														});
 													}
 												}
@@ -161,9 +163,7 @@ export default class ContactFormView extends JetView {
 							height: 50,
 							borderless: false,
 							click: () => {
-								this.app.callEvent("onClickCancel_contactForm", [
-									this.getParam("way", true)
-								]);
+								this.app.callEvent("onClickCancel_contactForm");
 							}
 						},
 						{
@@ -175,14 +175,14 @@ export default class ContactFormView extends JetView {
 							click: () => {
 								const values = this.$$("contactForm").getValues();
 								values.Photo = this.$$("image").getValues().Photo;
-								if (!contacts.getItem(values.id)) {
-									contacts.add(values);
-								} else {
-									contacts.updateItem(values.id, values);
+								if (this.$$("contactForm").validate()) {
+									if (!contacts.getItem(values.id)) {
+										contacts.add(values);
+									} else {
+										contacts.updateItem(values.id, values);
+									}
+									this.app.callEvent("onClickSave_contactForm");
 								}
-								this.setParam("id", values.id, true);
-								this.app.callEvent("onClickSave_contactForm", [values.id]);
-								this.$$("contactForm").clear();
 							}
 						}
 					]
@@ -215,6 +215,7 @@ export default class ContactFormView extends JetView {
 				this.$$("contactForm").setValues(values);
 			} else if (url[0].params.way === "add") {
 				this.setHeaderAndButtonName();
+				this.$$("image").setValues({ Photo: "" });
 			}
 		});
 	}
