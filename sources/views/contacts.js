@@ -56,12 +56,12 @@ export default class ContactsView extends JetView {
 		return ui;
 	}
 	init() {
-    this.$$("list").sync(contacts);
+		this.$$("list").sync(contacts);
 
-    this.on(this.$$("list").data, "onIdChange", (oldId, newId)=>{
-      this.setParam("id", newId, true);
+		this.on(this.$$("list").data, "onIdChange", (oldId, newId) => {
+			this.setParam("id", newId, true);
 			this.$$("list").select(newId);
-    });
+		});
 
 		this.on(this.app, "onCallContactForm", way => {
 			this.show(`contactForm?way=${way}`);
