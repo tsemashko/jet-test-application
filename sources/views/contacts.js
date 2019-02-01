@@ -1,26 +1,27 @@
 import { JetView } from "webix-jet";
 import { contacts } from "../models/contacts";
-import ContactDetailed from "./contactDetailed";
 
 export default class ContactsView extends JetView {
 	config() {
-		var header = {
+		const header = {
 			view: "toolbar",
 			css: "webix_dark",
-			cols: [
+			rows: [
 				{
 					view: "label",
 					label: "Contacts"
 				}
 			]
 		};
-		var list = {
+		const list = {
 			view: "list",
 			localId: "list",
-			template:
-				"<div id='user-icon'><img id='user-image'" +
-				"src='https://www.uic.mx/posgrados/files/2018/05/default-user.png' width='100%'></div>" +
-				"<div>#FirstName# #LastName#<br>#Company#<span class='remove webix_icon wxi-close'></span></div>",
+			template: function(obj) {
+				return `<div id='user-icon'><img id='user-image'
+				src='${obj.Photo ||
+					"https://www.uic.mx/posgrados/files/2018/05/default-user.png"}' width='100%'></div>
+      <div>${obj.FirstName} ${obj.LastName}<br>${obj.Company}</div>`;
+			},
 			scroll: false,
 			select: true,
 			type: {
@@ -29,20 +30,24 @@ export default class ContactsView extends JetView {
 			on: {
 				onAfterSelect: id => {
 					this.setParam("id", id, true);
+					contacts.waitData.then(() => {
+						this.show("contactDetailed");
+					});
 				}
 			}
 		};
-		var addButton = {
+		const addButton = {
 			view: "button",
 			label: "Add contact",
 			type: "icon",
 			icon: "wxi-plus",
 			width: 300,
 			click: () => {
-				this.show("addOrEditContactForm");
+				this.$$("list").unselectAll();
+				this.app.callEvent("onCallContactForm", ["add"]);
 			}
 		};
-		var ui = {
+		const ui = {
 			cols: [
 				{ rows: [header, list, addButton], width: 300 },
 				{ $subview: true }
@@ -52,12 +57,31 @@ export default class ContactsView extends JetView {
 	}
 	init() {
 		this.$$("list").sync(contacts);
-	}
-	urlChange() {
+
+		this.on(this.$$("list").data, "onIdChange", (oldId, newId) => {
+			this.setParam("id", newId, true);
+			this.$$("list").select(newId);
+		});
+
+		this.on(this.app, "onCallContactForm", way => {
+			this.show(`contactForm?way=${way}`);
+			this.$$("list").disable();
+		});
+		this.on(this.app, "onAfterDelete_contactDetailed", () => {
+			this.$$("list").select(contacts.getFirstId());
+		});
+		this.on(this.app, "onClickCancel_contactForm", () => {
+			this.$$("list").enable();
+			this.show("contactDetailed");
+			this.$$("list").select(this.getParam("id", true));
+		});
+		this.on(this.app, "onClickSave_contactForm", () => {
+			this.$$("list").enable();
+			this.show("contactDetailed");
+		});
 		contacts.waitData.then(() => {
-			const id = this.getParam("id") || contacts.getFirstId();
+			const id = contacts.getFirstId();
 			if (id) {
-				this.show("contactDetailed");
 				this.$$("list").select(id);
 			}
 		});
