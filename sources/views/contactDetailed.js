@@ -7,6 +7,7 @@ import FilesTabbarView from "./filesTabbar";
 
 export default class ContactDetailedView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const formatDate = webix.Date.dateToStr("%d-%m-%Y");
 		const area = {
 			view: "template",
@@ -54,18 +55,19 @@ export default class ContactDetailedView extends JetView {
 				{ view: "template", gravity: 3, borderless: true },
 				{
 					view: "button",
-					label: "Delete",
+					label: _("Delete"),
 					type: "icon",
 					icon: "wxi-trash",
 					height: 50,
 					borderless: false,
 					click: () => {
 						webix.confirm({
-							title: "Deleting contact",
-							ok: "Yes",
-							cancel: "No",
-							text:
-								"Are you sure you want to delete this contact? Deleting cannot be undone.",
+							title: _("Deleting contact"),
+							ok: _("Yes"),
+							cancel: _("No"),
+							text: _(
+								"Are you sure you want to delete this contact? Deleting cannot be undone."
+							),
 							callback: result => {
 								if (result) {
 									const id = this.getParentView().getParam("id", true);
@@ -84,7 +86,7 @@ export default class ContactDetailedView extends JetView {
 				},
 				{
 					view: "button",
-					label: "Edit",
+					label: _("Edit"),
 					type: "icon",
 					icon: "wxi-pencil",
 					height: 50,
@@ -105,8 +107,8 @@ export default class ContactDetailedView extends JetView {
 					value: "",
 					multiview: true,
 					options: [
-						{ value: "Activities", id: "activities" },
-						{ value: "Files", id: "files" }
+						{ value: _("Activities"), id: "activities" },
+						{ value: _("Files"), id: "files" }
 					]
 				},
 				{

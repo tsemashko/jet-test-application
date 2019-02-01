@@ -6,6 +6,7 @@ import { files } from "models/files";
 
 export default class FilesTabbarView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const filesTable = {
 			view: "datatable",
 			localId: "filesTable",
@@ -13,20 +14,20 @@ export default class FilesTabbarView extends JetView {
 			columns: [
 				{
 					id: "name",
-					header: "Name",
+					header: _("Name"),
 					fillspace: 1,
 					sort: "string"
 				},
 				{
 					id: "lastModifiedDate",
-					header: "Change date",
+					header: _("Change date"),
 					format: webix.Date.dateToStr("%d-%m-%Y"),
 					width: 200,
 					sort: "date"
 				},
 				{
 					id: "sizetext",
-					header: "Size",
+					header: _("Size"),
 					width: 100,
 					sort: "string"
 				},
@@ -40,11 +41,12 @@ export default class FilesTabbarView extends JetView {
 			onClick: {
 				removeFile: (e, id) => {
 					webix.confirm({
-						title: "Deleting file",
-						ok: "Yes",
-						cancel: "No",
-						text:
-							"Are you sure you want to delete this file? Deleting cannot be undone.",
+						title: _("Deleting file"),
+						ok: _("Yes"),
+						cancel: _("No"),
+						text: _(
+							"Are you sure you want to delete this file? Deleting cannot be undone."
+						),
 						callback: result => {
 							if (result) {
 								files.remove(id);
@@ -58,7 +60,7 @@ export default class FilesTabbarView extends JetView {
 		};
 		const button = {
 			view: "uploader",
-			value: "Upload file",
+			value: _("Upload file"),
 			autosend: false,
 			on: {
 				onBeforeFileAdd: file => {

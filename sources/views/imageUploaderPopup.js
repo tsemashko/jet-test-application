@@ -2,6 +2,7 @@ import { JetView } from "webix-jet";
 
 export default class ImageUploaderPopupView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const imageUploader = {
 			view: "popup",
 			localId: "imageUploader",
@@ -16,7 +17,7 @@ export default class ImageUploaderPopupView extends JetView {
 						elements: [
 							{
 								view: "text",
-								label: "Image URL",
+								label: _("Image URL"),
 								name: "Photo"
 							}
 						]
@@ -25,7 +26,7 @@ export default class ImageUploaderPopupView extends JetView {
 						cols: [
 							{
 								view: "button",
-								label: "Upload",
+								label: _("Upload"),
 								click: () => {
 									const values = this.$$("popupForm").getValues();
 									this.app.callEvent("onImageUpload_imageUploaderPopup", [
@@ -36,7 +37,7 @@ export default class ImageUploaderPopupView extends JetView {
 							},
 							{
 								view: "button",
-								label: "Cancel",
+								label: _("Cancel"),
 								click: () => {
 									this.$$("imageUploader").hide();
 								}

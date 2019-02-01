@@ -5,6 +5,7 @@ import { activities } from "models/activities";
 
 export default class ActivityFormView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const addOrEditForm = {
 			view: "window",
 			localId: "window",
@@ -25,14 +26,14 @@ export default class ActivityFormView extends JetView {
 				elements: [
 					{
 						view: "textarea",
-						label: "Details",
+						label: _("Details"),
 						name: "Details",
 						height: 80,
 						required: true
 					},
 					{
 						view: "combo",
-						label: "Type",
+						label: _("Type"),
 						name: "TypeID",
 						options: activitytypes,
 						required: true
@@ -40,7 +41,7 @@ export default class ActivityFormView extends JetView {
 					{
 						view: "combo",
 						localId: "contact",
-						label: "Contact",
+						label: _("Contact"),
 						name: "ContactID",
 						options: [],
 						required: true
@@ -50,7 +51,7 @@ export default class ActivityFormView extends JetView {
 							{
 								view: "datepicker",
 								name: "Date",
-								label: "Date",
+								label: _("Date"),
 								width: 250,
 								required: true,
 								format: "%d-%m-%Y"
@@ -58,7 +59,7 @@ export default class ActivityFormView extends JetView {
 							{
 								view: "datepicker",
 								name: "Time",
-								label: "Time",
+								label: _("Time"),
 								type: "time",
 								fillspace: 1,
 								labelAlign: "right",
@@ -69,7 +70,7 @@ export default class ActivityFormView extends JetView {
 					},
 					{
 						view: "checkbox",
-						label: "Completed",
+						label: _("Completed"),
 						name: "State",
 						checkValue: "Completed",
 						uncheckValue: "Open"
@@ -103,7 +104,7 @@ export default class ActivityFormView extends JetView {
 							},
 							{
 								view: "button",
-								label: "Cancel",
+								label: _("Cancel"),
 								click: () => {
 									this.$$("activityForm").clear();
 									this.getRoot().hide();
@@ -122,12 +123,13 @@ export default class ActivityFormView extends JetView {
 		});
 	}
 	setHeaderAndButtonName(value) {
+		const _ = this.app.getService("locale")._;
 		if (value) {
-			this.$$("head").define("label", "Edit Activity");
-			this.$$("savebutton").define("label", "Save");
+			this.$$("head").define("label", _("Edit activity"));
+			this.$$("savebutton").define("label", _("Save"));
 		} else {
-			this.$$("head").define("label", "Add Activity");
-			this.$$("savebutton").define("label", "Add");
+			this.$$("head").define("label", _("Add activity"));
+			this.$$("savebutton").define("label", _("Add"));
 		}
 		this.$$("head").refresh();
 		this.$$("savebutton").refresh();

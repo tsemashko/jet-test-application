@@ -7,6 +7,7 @@ import ActivityFormView from "./activityForm";
 
 export default class ActivitiesTabbarView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const activitiesTable = {
 			view: "datatable",
 			localId: "activitiesTable",
@@ -57,11 +58,12 @@ export default class ActivitiesTabbarView extends JetView {
 			onClick: {
 				removeActivity: (e, id) => {
 					webix.confirm({
-						title: "Deleting activity",
-						ok: "Yes",
-						cancel: "No",
-						text:
-							"Are you sure you want to delete this activity? Deleting cannot be undone.",
+						title: _("Deleting activity"),
+						ok: _("Yes"),
+						cancel: _("No"),
+						text: _(
+							"Are you sure you want to delete this activity? Deleting cannot be undone."
+						),
 						callback: result => {
 							if (result) {
 								if (activities.exists(id)) {
@@ -89,7 +91,7 @@ export default class ActivitiesTabbarView extends JetView {
 		};
 		const button = {
 			view: "button",
-			label: "Add activity",
+			label: _("Add activity"),
 			type: "icon",
 			icon: "wxi-plus-square",
 			click: () => {

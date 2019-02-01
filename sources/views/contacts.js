@@ -4,18 +4,19 @@ import { statuses } from "models/statuses";
 
 export default class ContactsView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const header = {
 			view: "toolbar",
 			css: "webix_dark",
 			rows: [
 				{
 					view: "label",
-					label: "Contacts"
-        },
-        {
-          view:"text",
-          localId:"list_input"
-        }
+					label: _("Contacts")
+				},
+				{
+					view: "text",
+					localId: "list_input"
+				}
 			]
 		};
 		const list = {
@@ -43,7 +44,7 @@ export default class ContactsView extends JetView {
 		};
 		const addButton = {
 			view: "button",
-			label: "Add contact",
+			label: _("Add contact"),
 			type: "icon",
 			icon: "wxi-plus",
 			width: 300,
@@ -64,10 +65,10 @@ export default class ContactsView extends JetView {
 		this.$$("list").sync(contacts);
 		const formatDate = webix.Date.dateToStr("%d-%m-%Y");
 
-		this.on(this.$$("list").data, "onIdChange", (oldId, newId)=>{
-      this.setParam("id", newId, true);
+		this.on(this.$$("list").data, "onIdChange", (oldId, newId) => {
+			this.setParam("id", newId, true);
 			this.$$("list").select(newId);
-    });
+		});
 
 		this.on(this.app, "onCallContactForm", way => {
 			this.show(`contactForm?way=${way}`);
@@ -90,24 +91,29 @@ export default class ContactsView extends JetView {
 			if (id) {
 				this.$$("list").select(id);
 			}
-    });
-    this.$$("list_input").attachEvent("onTimedKeyPress",function(){
-      const value = this.getValue().toLowerCase();
-      this.$scope.$$("list").filter(function(obj){
-        return obj.FirstName.toLowerCase().includes(value) ||
-        obj.LastName.toLowerCase().includes(value) ||
-        obj.FirstName.toLowerCase().includes(value) ||
-        statuses.getItem(obj.StatusID).Value.toLowerCase().includes(value) ||
-        obj.Company.toLowerCase().includes(value) ||
-        obj.Address.toLowerCase().includes(value) ||
-        obj.Job.toLowerCase().includes(value) ||
-        obj.Website.toLowerCase().includes(value) ||
-        obj.Skype.toLowerCase().includes(value) ||
-        obj.Phone.toLowerCase().includes(value) ||
-        obj.Email.toLowerCase().includes(value) ||
-        formatDate(obj.Birthday).includes(value) ||
-        formatDate(obj.StartDate).includes(value)
-      });
-    });
+		});
+		this.$$("list_input").attachEvent("onTimedKeyPress", function() {
+			const value = this.getValue().toLowerCase();
+			this.$scope.$$("list").filter(function(obj) {
+				return (
+					obj.FirstName.toLowerCase().includes(value) ||
+					obj.LastName.toLowerCase().includes(value) ||
+					obj.FirstName.toLowerCase().includes(value) ||
+					statuses
+						.getItem(obj.StatusID)
+						.Value.toLowerCase()
+						.includes(value) ||
+					obj.Company.toLowerCase().includes(value) ||
+					obj.Address.toLowerCase().includes(value) ||
+					obj.Job.toLowerCase().includes(value) ||
+					obj.Website.toLowerCase().includes(value) ||
+					obj.Skype.toLowerCase().includes(value) ||
+					obj.Phone.toLowerCase().includes(value) ||
+					obj.Email.toLowerCase().includes(value) ||
+					formatDate(obj.Birthday).includes(value) ||
+					formatDate(obj.StartDate).includes(value)
+				);
+			});
+		});
 	}
 }

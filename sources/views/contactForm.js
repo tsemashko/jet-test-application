@@ -5,6 +5,7 @@ import ImageUploaderPopupView from "./imageUploaderPopup";
 
 export default class ContactFormView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const header = {
 			view: "template",
 			localId: "header",
@@ -25,52 +26,52 @@ export default class ContactFormView extends JetView {
 							rows: [
 								{
 									view: "text",
-									label: "First name",
+									label: _("First name"),
 									name: "FirstName",
 									required: true
 								},
 								{
 									view: "text",
-									label: "Last name",
+									label: _("Last name"),
 									name: "LastName",
 									required: true
 								},
 								{
 									view: "datepicker",
 									name: "StartDate",
-									label: "Joining date",
+									label: _("Joining date"),
 									required: true,
 									format: "%d-%m-%Y"
 								},
 								{
 									view: "combo",
 									localId: "status",
-									label: "Status",
+									label: _("Status"),
 									name: "StatusID",
 									options: [],
 									required: true
 								},
 								{
 									view: "text",
-									label: "Job",
+									label: _("Job"),
 									name: "Job",
 									required: true
 								},
 								{
 									view: "text",
-									label: "Company",
+									label: _("Company"),
 									name: "Company",
 									required: true
 								},
 								{
 									view: "text",
-									label: "Website",
+									label: _("Website"),
 									name: "Website",
 									required: true
 								},
 								{
 									view: "text",
-									label: "Address",
+									label: _("Address"),
 									name: "Address",
 									required: true
 								}
@@ -81,26 +82,26 @@ export default class ContactFormView extends JetView {
 							rows: [
 								{
 									view: "text",
-									label: "Email",
+									label: _("Email"),
 									name: "Email",
 									required: true
 								},
 								{
 									view: "text",
-									label: "Skype",
+									label: _("Skype"),
 									name: "Skype",
 									required: true
 								},
 								{
 									view: "text",
-									label: "Phone",
+									label: _("Phone"),
 									name: "Phone",
 									required: true
 								},
 								{
 									view: "datepicker",
 									name: "Birthday",
-									label: "Birthday",
+									label: _("Birthday"),
 									required: true,
 									format: "%d-%m-%Y"
 								},
@@ -129,14 +130,14 @@ export default class ContactFormView extends JetView {
 												},
 												{
 													view: "button",
-													label: "Change photo",
+													label: _("Change photo"),
 													click: () => {
 														this.imageUploader.getRoot().show();
 													}
 												},
 												{
 													view: "button",
-													label: "Delete photo",
+													label: _("Delete photo"),
 													click: () => {
 														this.$$("image").setValues({
 															Photo: ""
@@ -159,7 +160,7 @@ export default class ContactFormView extends JetView {
 						{ view: "template", gravity: 3, borderless: true },
 						{
 							view: "button",
-							label: "Cancel",
+							label: _("Cancel"),
 							height: 50,
 							borderless: false,
 							click: () => {
@@ -220,12 +221,13 @@ export default class ContactFormView extends JetView {
 		});
 	}
 	setHeaderAndButtonName(value) {
+		const _ = this.app.getService("locale")._;
 		if (value) {
-			this.$$("header").define("template", "Edit contact");
-			this.$$("savebutton").define("label", "Save");
+			this.$$("header").define("template", _("Edit contact"));
+			this.$$("savebutton").define("label", _("Save"));
 		} else {
-			this.$$("header").define("template", "Add new contact");
-			this.$$("savebutton").define("label", "Add");
+			this.$$("header").define("template", _("Add new contact"));
+			this.$$("savebutton").define("label", _("Add"));
 		}
 		this.$$("header").refresh();
 		this.$$("savebutton").refresh();
