@@ -64,10 +64,10 @@ export default class ContactsView extends JetView {
 		this.$$("list").sync(contacts);
 		const formatDate = webix.Date.dateToStr("%d-%m-%Y");
 
-		this.$$("list").data.attachEvent("onIdChange", (oldId, newId) => {
-			this.setParam("id", newId, true);
+		this.on(this.$$("list").data, "onIdChange", (oldId, newId)=>{
+      this.setParam("id", newId, true);
 			this.$$("list").select(newId);
-		});
+    });
 
 		this.on(this.app, "onCallContactForm", way => {
 			this.show(`contactForm?way=${way}`);

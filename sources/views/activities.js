@@ -33,7 +33,6 @@ export default class ActivityView extends JetView {
 				{
 					view: "button",
 					label: "Completed",
-					//localId:"checkFilter",
 					click: () => {
 						this.$$("table").filter(obj => {
 							return obj.State == "Completed";
