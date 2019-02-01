@@ -27,9 +27,106 @@ export default class ActivityView extends JetView {
 				}
 			]
 		};
+		const filterToolbar = {
+			view: "toolbar",
+			cols: [
+				{
+					view: "button",
+					label: "Completed",
+					//localId:"checkFilter",
+					click: () => {
+						this.$$("table").filter(obj => {
+							return obj.State == "Completed";
+						});
+					}
+				},
+				{},
+				{
+					view: "button",
+					label: "Overdue",
+					click: () => {
+						this.$$("table").filter(obj => {
+							return obj.DueDate < new Date();
+						});
+					}
+				},
+				{
+					view: "button",
+					label: "Today",
+					click: () => {
+						this.$$("table").filter(obj => {
+							const today = new Date();
+							return (
+								obj.DueDate.getFullYear() == today.getFullYear() &&
+								obj.DueDate.getMonth() == today.getMonth() &&
+								obj.DueDate.getDate() == today.getDate()
+							);
+						});
+					}
+				},
+				{
+					view: "button",
+					label: "Tomorrow",
+					click: () => {
+						this.$$("table").filter(obj => {
+							const today = new Date();
+							return (
+								obj.DueDate.getFullYear() == today.getFullYear() &&
+								obj.DueDate.getMonth() == today.getMonth() &&
+								obj.DueDate.getDate() == today.getDate() + 1
+							);
+						});
+					}
+				},
+				{
+					view: "button",
+					label: "This week",
+					click: () => {
+						this.$$("table").filter(obj => {
+							const todayWithTime = new Date();
+							const today = new Date(
+								todayWithTime.getFullYear(),
+								todayWithTime.getMonth(),
+								todayWithTime.getDate()
+							);
+							const lastDate = new Date().setDate(
+								today.getDate() + 7 - today.getDay()
+							);
+							const firstDate = new Date().setDate(
+								today.getDate() - today.getDay()
+							);
+							return obj.DueDate <= lastDate && obj.DueDate >= firstDate;
+						});
+					}
+				},
+				{
+					view: "button",
+					label: "This month",
+					click: () => {
+						this.$$("table").filter(obj => {
+							const today = new Date();
+							return (
+								obj.DueDate.getFullYear() == today.getFullYear() &&
+								obj.DueDate.getMonth() == today.getMonth()
+							);
+						});
+					}
+				},
+				{},
+				{
+					view: "button",
+					label: "Reset",
+          css: "reset-btn",
+          click:()=>{
+            this.$$("table").filter();
+          }
+				}
+			]
+		};
 		const table = {
 			view: "datatable",
 			localId: "table",
+			scrollX: false,
 			columns: [
 				{
 					id: "State",
@@ -105,7 +202,7 @@ export default class ActivityView extends JetView {
 				}
 			}
 		};
-		return { rows: [toolbar, table] };
+		return { rows: [toolbar, filterToolbar, table] };
 	}
 	init() {
 		this.$$("table").sync(activities);

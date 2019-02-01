@@ -1,5 +1,6 @@
 import { JetView } from "webix-jet";
 import { contacts } from "../models/contacts";
+import { statuses } from "models/statuses";
 
 export default class ContactsView extends JetView {
 	config() {
@@ -10,7 +11,11 @@ export default class ContactsView extends JetView {
 				{
 					view: "label",
 					label: "Contacts"
-				}
+        },
+        {
+          view:"text",
+          localId:"list_input"
+        }
 			]
 		};
 		const list = {
@@ -57,7 +62,7 @@ export default class ContactsView extends JetView {
 	}
 	init() {
 		this.$$("list").sync(contacts);
-		//const formatDate = webix.Date.dateToStr("%d-%m-%Y");
+		const formatDate = webix.Date.dateToStr("%d-%m-%Y");
 
 		this.$$("list").data.attachEvent("onIdChange", (oldId, newId) => {
 			this.setParam("id", newId, true);
@@ -85,6 +90,24 @@ export default class ContactsView extends JetView {
 			if (id) {
 				this.$$("list").select(id);
 			}
-		});
+    });
+    this.$$("list_input").attachEvent("onTimedKeyPress",function(){
+      const value = this.getValue().toLowerCase();
+      this.$scope.$$("list").filter(function(obj){
+        return obj.FirstName.toLowerCase().includes(value) ||
+        obj.LastName.toLowerCase().includes(value) ||
+        obj.FirstName.toLowerCase().includes(value) ||
+        statuses.getItem(obj.StatusID).Value.toLowerCase().includes(value) ||
+        obj.Company.toLowerCase().includes(value) ||
+        obj.Address.toLowerCase().includes(value) ||
+        obj.Job.toLowerCase().includes(value) ||
+        obj.Website.toLowerCase().includes(value) ||
+        obj.Skype.toLowerCase().includes(value) ||
+        obj.Phone.toLowerCase().includes(value) ||
+        obj.Email.toLowerCase().includes(value) ||
+        formatDate(obj.Birthday).includes(value) ||
+        formatDate(obj.StartDate).includes(value)
+      });
+    });
 	}
 }
