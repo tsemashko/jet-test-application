@@ -124,35 +124,3 @@
   border-bottom:none;
   margin-left: 2px;
 }
-
-.reset-btn button{
-  background-color:#67a872;
-  color:white;
-}
-.reset-btn button:hover{
-  background-color:#7ece8c;
-}
-
-.reset-btn button:focus{
-  background-color:#67a872;
-}
-
-.reset-btn button:after {
-  content: "";
-  background: #f1f1f1;
-  display: block;
-  position: absolute;
-  padding-top: 300%;
-  padding-left: 350%;
-  margin-left: -20px !important;
-  margin-top: -120%;
-  opacity: 0;
-  transition: all 0.8s
-}
-
-.reset-btn button:active:after {
-  padding: 0;
-  margin: 0;
-  opacity: 1;
-  transition: 0s
-}

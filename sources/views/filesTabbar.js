@@ -78,8 +78,9 @@ export default class FilesTabbarView extends JetView {
 		return { rows: [filesTable, button] };
 	}
 	filterFiles(id) {
-		this.$$("filesTable").clearAll();
-		this.$$("filesTable").parse(
+		const table = this.$$("filesTable");
+		table.clearAll();
+		table.parse(
 			files.find(function(obj) {
 				return obj.ContactID == id;
 			})

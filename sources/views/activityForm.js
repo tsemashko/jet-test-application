@@ -83,13 +83,14 @@ export default class ActivityFormView extends JetView {
 								label: "",
 								type: "form",
 								click: () => {
-									const values = this.$$("activityForm").getValues();
+									const form = this.$$("activityForm");
+									const values = form.getValues();
 									const formatDate = webix.Date.dateToStr("%d-%m-%Y");
 									const formatTime = webix.Date.dateToStr("%H:%i");
 									values.DueDate = `${formatDate(values.Date)} ${formatTime(
 										values.Time
 									)}`;
-									if (this.$$("activityForm").validate()) {
+									if (form.validate()) {
 										if (!activities.getItem(values.id)) {
 											activities.add(values);
 											this.app.callEvent("onClickSave_activityForm", [values]);
@@ -97,7 +98,7 @@ export default class ActivityFormView extends JetView {
 											activities.updateItem(values.id, values);
 											this.app.callEvent("onClickSave_activityForm");
 										}
-										this.$$("activityForm").clear();
+										form.clear();
 										this.getRoot().hide();
 									}
 								}
@@ -124,14 +125,16 @@ export default class ActivityFormView extends JetView {
 	}
 	setHeaderAndButtonName(value) {
 		const _ = this.app.getService("locale")._;
+		const header = this.$$("head");
+		const button = this.$$("savebutton");
 		if (value) {
-			this.$$("head").define("label", _("Edit activity"));
-			this.$$("savebutton").define("label", _("Save"));
+			header.define("label", _("Edit activity"));
+			button.define("label", _("Save"));
 		} else {
-			this.$$("head").define("label", _("Add activity"));
-			this.$$("savebutton").define("label", _("Add"));
+			header.define("label", _("Add activity"));
+			button.define("label", _("Add"));
 		}
-		this.$$("head").refresh();
-		this.$$("savebutton").refresh();
+		header.refresh();
+		button.refresh();
 	}
 }

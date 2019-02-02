@@ -174,9 +174,10 @@ export default class ContactFormView extends JetView {
 							height: 50,
 							borderless: false,
 							click: () => {
-								const values = this.$$("contactForm").getValues();
+								const form = this.$$("contactForm");
+								const values = form.getValues();
 								values.Photo = this.$$("image").getValues().Photo;
-								if (this.$$("contactForm").validate()) {
+								if (form.validate()) {
 									if (!contacts.getItem(values.id)) {
 										contacts.add(values);
 									} else {
@@ -222,14 +223,16 @@ export default class ContactFormView extends JetView {
 	}
 	setHeaderAndButtonName(value) {
 		const _ = this.app.getService("locale")._;
+		const header = this.$$("header");
+		const button = this.$$("savebutton");
 		if (value) {
-			this.$$("header").define("template", _("Edit contact"));
-			this.$$("savebutton").define("label", _("Save"));
+			header.define("template", _("Edit contact"));
+			button.define("label", _("Save"));
 		} else {
-			this.$$("header").define("template", _("Add new contact"));
-			this.$$("savebutton").define("label", _("Add"));
+			header.define("template", _("Add new contact"));
+			button.define("label", _("Add"));
 		}
-		this.$$("header").refresh();
-		this.$$("savebutton").refresh();
+		header.refresh();
+		button.refresh();
 	}
 }
