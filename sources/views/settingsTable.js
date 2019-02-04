@@ -2,9 +2,10 @@ import { JetView } from "webix-jet";
 import { icons } from "models/icons";
 
 export default class SettingsTableView extends JetView {
-	constructor(app, name, data) {
+	constructor(app, name, data, title) {
 		super(app, name);
 		this._tdata = data;
+		this._title = title;
 	}
 	config() {
 		const _ = this.app.getService("locale")._;
@@ -22,7 +23,7 @@ export default class SettingsTableView extends JetView {
 				},
 				{
 					id: "Value",
-					header: _("Activity type"),
+					header: _(this._title),
 					fillspace: 1
 				},
 				{
@@ -41,11 +42,11 @@ export default class SettingsTableView extends JetView {
 			onClick: {
 				removeActivity: (e, id) => {
 					webix.confirm({
-						title: _("Deleting activity type"),
+						title: _(`Deleting ${this._title.toLowerCase()}`),
 						ok: _("Yes"),
 						cancel: _("No"),
 						text: _(
-							"Are you sure you want to delete this activity type? Deleting cannot be undone."
+							`Are you sure you want to delete this ${this._title.toLowerCase()}? Deleting cannot be undone.`
 						),
 						callback: result => {
 							if (result) {
@@ -57,10 +58,22 @@ export default class SettingsTableView extends JetView {
 				},
 				editActivity: (e, id) => {
 					const values = this._tdata.getItem(id);
-					values.Icon = icons.find(function(obj) {
+					const icon = icons.find(function(obj) {
 						return obj.value == values.Icon;
-					}, true).id;
-					this.$$("settingsForm").setValues(values);
+					}, true);
+					if (icon) {
+						this.$$("settingsForm").setValues({
+							id: values.id,
+							Icon: icon.id,
+							Value: values.Value
+						});
+					} else {
+						this.$$("settingsForm").setValues({
+							id: values.id,
+							Icon: null,
+							Value: values.Value
+						});
+					}
 					const button = this.$$("settingsFormButton");
 					button.define("label", _("Save"));
 					button.refresh();

@@ -3,14 +3,14 @@ import { JetView, plugins } from "webix-jet";
 export default class TopView extends JetView {
 	config() {
 		const _ = this.app.getService("locale")._;
-		var header = {
+		const header = {
 			type: "header",
 			template: "Menu",
 			css: "webix_header app_header",
 			height: 42
 		};
 
-		var menu = {
+		const menu = {
 			view: "menu",
 			id: "top:menu",
 			css: "app_menu",
@@ -25,7 +25,7 @@ export default class TopView extends JetView {
 			]
 		};
 
-		var ui = {
+		const ui = {
 			type: "clean",
 			paddingX: 5,
 			css: "app_layout",

@@ -93,26 +93,34 @@ export default class ContactsView extends JetView {
 			}
 		});
 		this.$$("list_input").attachEvent("onTimedKeyPress", function() {
-			const value = this.getValue().toLowerCase();
+			const value = this.getValue()
+				.toLowerCase()
+				.trim();
 			this.$scope.$$("list").filter(function(obj) {
-				return (
-					obj.FirstName.toLowerCase().includes(value) ||
-					obj.LastName.toLowerCase().includes(value) ||
-					obj.FirstName.toLowerCase().includes(value) ||
+				if (
+					obj.StatusID &&
 					statuses
 						.getItem(obj.StatusID)
 						.Value.toLowerCase()
-						.includes(value) ||
-					obj.Company.toLowerCase().includes(value) ||
-					obj.Address.toLowerCase().includes(value) ||
-					obj.Job.toLowerCase().includes(value) ||
-					obj.Website.toLowerCase().includes(value) ||
-					obj.Skype.toLowerCase().includes(value) ||
-					obj.Phone.toLowerCase().includes(value) ||
-					obj.Email.toLowerCase().includes(value) ||
-					formatDate(obj.Birthday).includes(value) ||
-					formatDate(obj.StartDate).includes(value)
-				);
+						.includes(value)
+				) {
+					return true;
+				}
+				let transformedField = "";
+				for (let field in obj) {
+					if (obj[field] && obj[field] instanceof Date) {
+						transformedField = formatDate(obj[field]);
+					} else {
+						transformedField = obj[field];
+					}
+					if (
+						transformedField &&
+						typeof transformedField === "string" &&
+						transformedField.toLowerCase().includes(value)
+					) {
+						return true;
+					}
+				}
 			});
 		});
 	}

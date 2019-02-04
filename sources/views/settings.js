@@ -40,8 +40,8 @@ export default class SettingsView extends JetView {
 				toolbar,
 				{
 					cols: [
-						new SettingsTableView(this.app, "", activitytypes),
-						new SettingsTableView(this.app, "", statuses)
+						new SettingsTableView(this.app, "", activitytypes, "Activity type"),
+						new SettingsTableView(this.app, "", statuses, "Status")
 					]
 				}
 			]
