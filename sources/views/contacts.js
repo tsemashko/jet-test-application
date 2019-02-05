@@ -1,15 +1,21 @@
 import { JetView } from "webix-jet";
 import { contacts } from "../models/contacts";
+import { statuses } from "models/statuses";
 
 export default class ContactsView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const header = {
 			view: "toolbar",
 			css: "webix_dark",
 			rows: [
 				{
 					view: "label",
-					label: "Contacts"
+					label: _("Contacts")
+				},
+				{
+					view: "text",
+					localId: "list_input"
 				}
 			]
 		};
@@ -38,7 +44,7 @@ export default class ContactsView extends JetView {
 		};
 		const addButton = {
 			view: "button",
-			label: "Add contact",
+			label: _("Add contact"),
 			type: "icon",
 			icon: "wxi-plus",
 			width: 300,
@@ -57,6 +63,7 @@ export default class ContactsView extends JetView {
 	}
 	init() {
 		this.$$("list").sync(contacts);
+		const formatDate = webix.Date.dateToStr("%d-%m-%Y");
 
 		this.on(this.$$("list").data, "onIdChange", (oldId, newId) => {
 			this.setParam("id", newId, true);
@@ -84,6 +91,37 @@ export default class ContactsView extends JetView {
 			if (id) {
 				this.$$("list").select(id);
 			}
+		});
+		this.$$("list_input").attachEvent("onTimedKeyPress", function() {
+			const value = this.getValue()
+				.toLowerCase()
+				.trim();
+			this.$scope.$$("list").filter(function(obj) {
+				if (
+					obj.StatusID &&
+					statuses
+						.getItem(obj.StatusID)
+						.Value.toLowerCase()
+						.includes(value)
+				) {
+					return true;
+				}
+				let transformedField = "";
+				for (let field in obj) {
+					if (obj[field] && obj[field] instanceof Date) {
+						transformedField = formatDate(obj[field]);
+					} else {
+						transformedField = obj[field];
+					}
+					if (
+						transformedField &&
+						typeof transformedField === "string" &&
+						transformedField.toLowerCase().includes(value)
+					) {
+						return true;
+					}
+				}
+			});
 		});
 	}
 }
